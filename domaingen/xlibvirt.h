@@ -45,6 +45,13 @@
 #  include <inttypes.h>
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libvirt/libvirt.h>
+
 #ifndef _XLIBVIRT_H_
 #define _XLIBVIRT_H_
 
@@ -176,11 +183,18 @@ typedef struct {
 
 /*
  * The top level libvirt domain definition. The content of opts may vary
- * based on the type value (i.e. lxc, kvm, openvz, etc).
- */
+ * based on the type value (i.e. lxc, kvm, openvz, etc).  */
 typedef struct {
         char* type;
         xlibvirt_domain_elements_t* opts;
 } xlibvirt_domain_t;
+
+
+/****************************************************************************
+ * Function prototypes
+ ****************************************************************************/
+
+xmlChar* xlibvirt_build_domain_xml(xlibvirt_domain_t* domain);
+int xlibvirt_boot_domain(xlibvirt_domain_t domain);
 
 #endif /* _XLIBVIRT_H_ */
