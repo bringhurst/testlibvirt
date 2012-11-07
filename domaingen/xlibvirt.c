@@ -47,18 +47,80 @@
 
 #include "xlibvirt.h"
 
+/****
+<domain type='lxc'>
+  <name>vm1</name>
+  <memory>30000</memory>
+  <os>
+    <type>exe</type>
+    <init>/bin/bash</init>
+  </os>
+  <vcpu>1</vcpu>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/lib/libvirt/libvirt_lxc</emulator>
+    <interface type='network'>
+      <source network='default'/>
+    </interface>
+    <filesystem type='mount'>
+      <source dir='/'/>
+      <target dir='/'/>
+    </filesystem>
+    <console type='pty' />
+  </devices>
+</domain>
+****/
+
+void
+_build_domain_xml_os(xlibvirt_domain_os_t* os, xmlNodePtr root_node) {
+
+}
+
+void
+_build_domain_xml_devices(xlibvirt_domain_devices_t* devices, xmlNodePtr root_node) {
+
+}
+
+void
+_build_domain_xml_elements(xlibvirt_domain_elements_t* elements, xmlNodePtr root_node) {
+	xmlNodePtr os_node = xmlNewNode(NULL, BAD_CAST "os");
+	xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
+
+	xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST elements->name);
+	xmlNewChild(root_node, NULL, BAD_CAST "memory", BAD_CAST elements->memory);
+	xmlNewChild(root_node, NULL, BAD_CAST "vcpu", BAD_CAST elements->vcpu);
+	xmlNewChild(root_node, NULL, BAD_CAST "on_poweroff", BAD_CAST elements->on_poweroff);
+	xmlNewChild(root_node, NULL, BAD_CAST "on_reboot", BAD_CAST elements->on_reboot);
+	xmlNewChild(root_node, NULL, BAD_CAST "on_crash", BAD_CAST elements->on_crash);
+
+	_build_domain_xml_os(elements->os, os_node);
+	_build_domain_xml_devices(elements->devices, devices_node);
+
+	xmlAddChild(root_node, os_node);
+	xmlAddChild(root_node, devices_node);
+}
+
 /*
  * This will translate a domain struct into the xml schema required by
  * libvirt.
  */
-xmlChar* xlibvirt_create_domain_xml(xlibvirt_domain_t* domain) {
+xmlChar* xlibvirt_build_domain_xml(xlibvirt_domain_t* domain) {
 	xmlDocPtr doc = NULL;
 	xmlNodePtr root_node = NULL;
 	xmlChar *xml_buf;
 
 	LIBXML_TEST_VERSION;
-
 	doc = xmlNewDoc(BAD_CAST "1.0");
+
+	root_node = xmlNewNode(NULL, BAD_CAST "domain");
+	xmlNewProp(root_node, BAD_CAST "type", BAD_CAST domain->type);
+
+	_build_domain_xml_elements(domain->opts, root_node);
+
+	xmlDocSetRootElement(doc, root_node);
 	xmlDocDumpFormatMemory(doc, &xml_buf, 0, 1);
 
 	xmlFreeDoc(doc);

@@ -59,7 +59,6 @@ typedef struct {
         char* network;
 } xlibvirt_domain_device_interface_source_t;
 
-
 /*
  * An interface which may be included in the device list of a domain.
  */
@@ -92,14 +91,13 @@ typedef struct {
  */
 typedef struct {
 	char* type;
-	xlibvirt_domain_device_filesystem_source_t source;
-	xlibvirt_domain_device_filesystem_target_t target;
+	xlibvirt_domain_device_filesystem_source_t* source;
+	xlibvirt_domain_device_filesystem_target_t* target;
 } xlibvirt_domain_device_filesystem_t;
 
 
 /****************************************************************************
- * Pool types
- ****************************************************************************/
+ * Pool types ****************************************************************************/
 
 /*
  * A pool target.
@@ -123,8 +121,8 @@ typedef struct {
 typedef struct {
 	char* type;
 	char* name;
-	xlibvirt_domain_device_pool_source_t source;
-	xlibvirt_domain_device_pool_target_t target;
+	xlibvirt_domain_device_pool_source_t* source;
+	xlibvirt_domain_device_pool_target_t* target;
 } xlibvirt_domain_device_pool_t;
 
 
@@ -172,8 +170,8 @@ typedef struct {
         char* on_reboot;
         char* on_crash;
 
-        xlibvirt_domain_os_t os;
-        xlibvirt_domain_devices_t devices;
+        xlibvirt_domain_os_t* os;
+        xlibvirt_domain_devices_t* devices;
 } xlibvirt_domain_elements_t;
 
 /*
@@ -182,7 +180,7 @@ typedef struct {
  */
 typedef struct {
         char* type;
-        xlibvirt_domain_elements_t opts;
+        xlibvirt_domain_elements_t* opts;
 } xlibvirt_domain_t;
 
 #endif /* _XLIBVIRT_H_ */
