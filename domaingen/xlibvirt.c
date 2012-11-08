@@ -129,10 +129,21 @@ _build_domain_xml_device_interface(xlibvirt_domain_device_interface_t* interface
 
 xmlNodePtr
 _build_domain_xml_device_filesystem(xlibvirt_domain_device_filesystem_t* filesystem) {
-	xmlNodePtr filesystem_node = xmlNewNode(NULL, BAD_CAST "filesystem");
+	xmlNodePtr filesystem_node = NULL;
+	xmlNodePtr source_node = NULL;
+	xmlNodePtr target_node = NULL;
+
+	filesystem_node = xmlNewNode(NULL, BAD_CAST "filesystem");
 	xmlNewProp(filesystem_node, BAD_CAST "type", BAD_CAST filesystem->type);
 
-	/* TODO */
+	source_node = xmlNewNode(NULL, BAD_CAST "source");
+	xmlNewProp(source_node, BAD_CAST "dir", BAD_CAST filesystem->source->dir);
+
+	target_node = xmlNewNode(NULL, BAD_CAST "target");
+	xmlNewProp(target_node, BAD_CAST "dir", BAD_CAST filesystem->target->dir);
+
+        xmlAddChild(filesystem_node, source_node);
+        xmlAddChild(filesystem_node, target_node);
 
 	return filesystem_node;
 }
