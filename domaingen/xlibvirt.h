@@ -170,8 +170,8 @@ typedef struct {
         char* name;
         char* clock_offset;
 
-        size_t memory;
-        size_t vcpu;
+        char* memory;
+        char* vcpu;
 
         char* on_poweroff;
         char* on_reboot;

@@ -6,7 +6,7 @@ DEPS = xlibvirt.h
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 all: xlibvirt.o test.o
-	gcc -Wall -o test xlibvirt.o test.o -I. -lxml2
+	gcc -Wall -g -o test xlibvirt.o test.o -I. -lxml2
 
 clean:
 	rm -f ./*.o ./*~ ./core ./test

@@ -95,19 +95,27 @@ _build_domain_xml_devices(xlibvirt_domain_devices_t* devices, xmlNodePtr root_no
 
 void
 _build_domain_xml_elements(xlibvirt_domain_elements_t* elements, xmlNodePtr root_node) {
-	xmlNodePtr os_node = xmlNewNode(NULL, BAD_CAST "os");
-	xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
+	if(elements != NULL) {
+		xmlNodePtr os_node = xmlNewNode(NULL, BAD_CAST "os");
+		xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
 
-	xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST elements->name);
-	xmlNewChild(root_node, NULL, BAD_CAST "memory", BAD_CAST elements->memory);
-	xmlNewChild(root_node, NULL, BAD_CAST "vcpu", BAD_CAST elements->vcpu);
-	xmlNewChild(root_node, NULL, BAD_CAST "on_poweroff", BAD_CAST elements->on_poweroff);
-	xmlNewChild(root_node, NULL, BAD_CAST "on_reboot", BAD_CAST elements->on_reboot);
-	xmlNewChild(root_node, NULL, BAD_CAST "on_crash", BAD_CAST elements->on_crash);
+		xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST elements->name);
+		xmlNewChild(root_node, NULL, BAD_CAST "memory", elements->memory);
+		xmlNewChild(root_node, NULL, BAD_CAST "vcpu", elements->vcpu);
+		xmlNewChild(root_node, NULL, BAD_CAST "on_poweroff", BAD_CAST elements->on_poweroff);
+		xmlNewChild(root_node, NULL, BAD_CAST "on_reboot", BAD_CAST elements->on_reboot);
+		xmlNewChild(root_node, NULL, BAD_CAST "on_crash", BAD_CAST elements->on_crash);
 
-	_build_domain_xml_os(elements->os, os_node);
-	_build_domain_xml_devices(elements->devices, devices_node);
+		if(elements->os != NULL) {
+			_build_domain_xml_os(elements->os, os_node);
+			xmlAddChild(root_node, os_node);
+		}
 
-	xmlAddChild(root_node, os_node);
-	xmlAddChild(root_node, devices_node);
+		if(elements->devices != NULL) {
+			_build_domain_xml_devices(elements->devices, devices_node);
+			xmlAddChild(root_node, devices_node);
+		}
+	}
 }
+
+/* EOF */
