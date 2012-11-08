@@ -30,7 +30,12 @@ xlibvirt_domain_os_t* build_domain_os() {
 	</os>
 	*/
 
-	return (xlibvirt_domain_os_t*) NULL;
+	xlibvirt_domain_os_t* os = (xlibvirt_domain_os_t*) malloc(sizeof(xlibvirt_domain_os_t));
+
+	os->type = "exe";
+	os->init = "/bin/bash";
+
+	return os;
 }
 
 xlibvirt_domain_devices_t* build_domain_devices() {
@@ -41,7 +46,24 @@ xlibvirt_domain_devices_t* build_domain_devices() {
 	</devices>
 	*/
 
-	return (xlibvirt_domain_devices_t*) NULL;
+	xlibvirt_domain_devices_t* devices =
+		(xlibvirt_domain_devices_t*) malloc(sizeof(xlibvirt_domain_devices_t));
+
+	devices->interfaces = (xlibvirt_domain_device_interface_t**) malloc(sizeof(xlibvirt_domain_device_interface_t*) * 2);
+	devices->filesystems = (xlibvirt_domain_device_filesystem_t**) malloc(sizeof(xlibvirt_domain_device_console_t*) * 2);
+	devices->consoles = (xlibvirt_domain_device_console_t**) malloc(sizeof(xlibvirt_domain_device_console_t*) * 2);
+
+	devices->interfaces[0] = build_domain_device_interface();
+	devices->filesystems[0] = build_domain_device_filesystem();
+	devices->consoles[0] = build_domain_device_console();
+
+	devices->interfaces[1] = NULL;
+	devices->filesystems[1] = NULL;
+	devices->consoles[1] = NULL;
+
+	devices->pools = NULL;
+
+	return devices;
 }
 
 xlibvirt_domain_device_console_t* build_domain_device_console() {
@@ -49,7 +71,12 @@ xlibvirt_domain_device_console_t* build_domain_device_console() {
 	<console type='pty' />
         */
 
-        return (xlibvirt_domain_device_console_t*) NULL;
+	xlibvirt_domain_device_console_t* console =
+		(xlibvirt_domain_device_console_t*) malloc(sizeof(xlibvirt_domain_device_console_t));
+
+	console->type = "pty";
+
+        return console;
 }
 
 xlibvirt_domain_device_filesystem_t* build_domain_device_filesystem() {
@@ -59,7 +86,15 @@ xlibvirt_domain_device_filesystem_t* build_domain_device_filesystem() {
 	</filesystem>
         */
 
-        return (xlibvirt_domain_device_filesystem_t*) NULL;
+	xlibvirt_domain_device_filesystem_t* filesystem =
+		(xlibvirt_domain_device_filesystem_t*) malloc(sizeof(xlibvirt_domain_device_filesystem_t));
+
+	filesystem->type = "mount";
+
+	filesystem->source = build_domain_device_filesystem_source();
+	filesystem->target = build_domain_device_filesystem_target();
+
+        return filesystem;
 }
 
 xlibvirt_domain_device_filesystem_source_t* build_domain_device_filesystem_source() {
@@ -67,16 +102,25 @@ xlibvirt_domain_device_filesystem_source_t* build_domain_device_filesystem_sourc
 	<source dir='/'/>
         */
 
-        return (xlibvirt_domain_device_filesystem_source_t*) NULL;
-}
+	xlibvirt_domain_device_filesystem_source_t* source =
+		(xlibvirt_domain_device_filesystem_source_t*) malloc(sizeof(xlibvirt_domain_device_filesystem_source_t));
 
+	source->dir = "/";
+
+        return source;
+}
 
 xlibvirt_domain_device_filesystem_target_t* build_domain_device_filesystem_target() {
         /*
 	<target dir='/'/>
         */
 
-        return (xlibvirt_domain_device_filesystem_target_t*) NULL;
+	xlibvirt_domain_device_filesystem_target_t* target =
+		(xlibvirt_domain_device_filesystem_target_t*) malloc(sizeof(xlibvirt_domain_device_filesystem_target_t));
+
+	target->dir = "/";
+
+        return target;
 }
 
 xlibvirt_domain_device_interface_t* build_domain_device_interface() {
@@ -86,7 +130,17 @@ xlibvirt_domain_device_interface_t* build_domain_device_interface() {
 	</interface>
 	*/
 
-	return (xlibvirt_domain_device_interface_t*) NULL;
+	xlibvirt_domain_device_interface_t* interface =
+		(xlibvirt_domain_device_interface_t*) malloc(sizeof(xlibvirt_domain_device_interface_t));
+
+	interface->type = "network";
+
+	interface->sources = (xlibvirt_domain_device_interface_source_t**) malloc(sizeof(xlibvirt_domain_device_interface_source_t*) * 2);
+
+	interface->sources[0] = build_domain_device_interface_source();
+	interface->sources[1] = NULL;
+
+	return interface;
 }
 
 xlibvirt_domain_device_interface_source_t* build_domain_device_interface_source() {
@@ -94,7 +148,10 @@ xlibvirt_domain_device_interface_source_t* build_domain_device_interface_source(
 	<source network='default'/>
 	*/
 
-	return (xlibvirt_domain_device_interface_source_t*) NULL;
+	xlibvirt_domain_device_interface_source_t* source =
+		(xlibvirt_domain_device_interface_source_t*) malloc(sizeof(xlibvirt_domain_device_interface_source_t));
+
+	return source;
 }
 
 xlibvirt_domain_elements_t* build_domain_elements() {
