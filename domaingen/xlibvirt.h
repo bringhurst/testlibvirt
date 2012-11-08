@@ -195,7 +195,6 @@ typedef struct {
  * Function prototypes
  ****************************************************************************/
 
-xmlChar* xlibvirt_build_domain_xml(xlibvirt_domain_t* domain);
-int xlibvirt_boot_domain(xlibvirt_domain_t domain);
+int xlibvirt_boot_domain(xlibvirt_domain_t* domain);
 
 #endif /* _XLIBVIRT_H_ */

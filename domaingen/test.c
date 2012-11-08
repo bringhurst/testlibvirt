@@ -228,11 +228,10 @@ xlibvirt_domain_t* build_domain() {
 }
 
 int main(void) {
-	char* xmlconfig;
 	xlibvirt_domain_t* domain;
 
-	xmlconfig = xlibvirt_build_domain_xml(build_domain());
-	fprintf(stdout, "%s\n", xmlconfig);
+	domain = build_domain();
+	xlibvirt_boot_domain(domain);
 
 	return 0;
 }

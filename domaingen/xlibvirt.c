@@ -43,38 +43,15 @@
 /*
  * Prototypes for internal functions
  */
-void _build_domain_xml_os(xlibvirt_domain_os_t* os, xmlNodePtr root_node);
-void _build_domain_xml_devices(xlibvirt_domain_devices_t* devices, xmlNodePtr root_node);
-void _build_domain_xml_elements(xlibvirt_domain_elements_t* elements, xmlNodePtr root_node);
-
-/*
- * This will translate a domain struct into the xml schema required by
- * libvirt.
- */
-xmlChar* xlibvirt_build_domain_xml(xlibvirt_domain_t* domain) {
-	xmlDocPtr doc = NULL;
-	xmlNodePtr root_node = NULL;
-	xmlChar *xml_buf;
-
-	LIBXML_TEST_VERSION;
-	doc = xmlNewDoc(BAD_CAST "1.0");
-
-	root_node = xmlNewNode(NULL, BAD_CAST "domain");
-	xmlNewProp(root_node, BAD_CAST "type", BAD_CAST domain->type);
-
-	_build_domain_xml_elements(domain->opts, root_node);
-
-	xmlDocSetRootElement(doc, root_node);
-	xmlDocDumpFormatMemory(doc, &xml_buf, 0, 1);
-
-	xmlFreeDoc(doc);
-	xmlCleanupParser();
-
-	return xml_buf;
-}
+xmlChar* _build_domain_xml(xlibvirt_domain_t* domain);
+xmlNodePtr _build_domain_xml_os(xlibvirt_domain_os_t* os);
+xmlNodePtr _build_domain_xml_devices(xlibvirt_domain_devices_t* devices);
+xmlNodePtr _build_domain_xml_elements(xlibvirt_domain_elements_t* elements, char* type);
 
 int
-xlibvirt_boot_domain(xlibvirt_domain_t domain) {
+xlibvirt_boot_domain(xlibvirt_domain_t* domain) {
+	/* TODO: Actually boot the domain. */
+	fprintf(stdout, "%s\n", _build_domain_xml(domain));
 	return -1;
 }
 
@@ -83,39 +60,81 @@ xlibvirt_boot_domain(xlibvirt_domain_t domain) {
  * Internal functions.
  *****************************************************************************/
 
-void
-_build_domain_xml_os(xlibvirt_domain_os_t* os, xmlNodePtr root_node) {
+/*
+ * This will translate a domain struct into the xml schema required by
+ * libvirt.
+ */
+xmlChar* _build_domain_xml(xlibvirt_domain_t* domain) {
+        xmlDocPtr doc = NULL;
+	xmlNodePtr elements_node = NULL;
+        xmlChar *xml_buf;
 
+        LIBXML_TEST_VERSION;
+        doc = xmlNewDoc(BAD_CAST "1.0");
+
+        elements_node = _build_domain_xml_elements(domain->opts, domain->type);
+
+        xmlDocSetRootElement(doc, elements_node);
+        xmlDocDumpFormatMemory(doc, &xml_buf, 0, 1);
+
+        xmlFreeDoc(doc);
+        xmlCleanupParser();
+
+        return xml_buf;
 }
 
-void
-_build_domain_xml_devices(xlibvirt_domain_devices_t* devices, xmlNodePtr root_node) {
+xmlNodePtr
+_build_domain_xml_os(xlibvirt_domain_os_t* os) {
+	xmlNodePtr os_node = xmlNewNode(NULL, BAD_CAST "os");
 
+	xmlNewChild(os_node, NULL, BAD_CAST "type", BAD_CAST os->type);
+	xmlNewChild(os_node, NULL, BAD_CAST "init", BAD_CAST os->init);
+
+	return os_node;
 }
 
-void
-_build_domain_xml_elements(xlibvirt_domain_elements_t* elements, xmlNodePtr root_node) {
+xmlNodePtr
+_build_domain_xml_devices(xlibvirt_domain_devices_t* devices) {
+	xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
+
+/*
+	xlibvirt_domain_devices_t* curr = *devices;
+
+	while(curr != NULL) {
+		xmlNewChild(devices_node, NULL, BAD_CAST "emulator", BAD_CAST curr->emulator);
+		curr++;
+	}
+*/
+	return devices_node;
+}
+
+xmlNodePtr
+_build_domain_xml_elements(xlibvirt_domain_elements_t* elements, char* type) {
+	xmlNodePtr os_node = NULL;
+	xmlNodePtr devices_node = NULL;
+	xmlNodePtr elements_node = NULL;
+
+	elements_node = xmlNewNode(NULL, BAD_CAST "domain");
+        xmlNewProp(elements_node, BAD_CAST "type", BAD_CAST type);
+
 	if(elements != NULL) {
-		xmlNodePtr os_node = xmlNewNode(NULL, BAD_CAST "os");
-		xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
-
-		xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST elements->name);
-		xmlNewChild(root_node, NULL, BAD_CAST "memory", elements->memory);
-		xmlNewChild(root_node, NULL, BAD_CAST "vcpu", elements->vcpu);
-		xmlNewChild(root_node, NULL, BAD_CAST "on_poweroff", BAD_CAST elements->on_poweroff);
-		xmlNewChild(root_node, NULL, BAD_CAST "on_reboot", BAD_CAST elements->on_reboot);
-		xmlNewChild(root_node, NULL, BAD_CAST "on_crash", BAD_CAST elements->on_crash);
+		xmlNewChild(elements_node, NULL, BAD_CAST "name", BAD_CAST elements->name);
+		xmlNewChild(elements_node, NULL, BAD_CAST "memory", elements->memory);
+		xmlNewChild(elements_node, NULL, BAD_CAST "vcpu", elements->vcpu);
+		xmlNewChild(elements_node, NULL, BAD_CAST "on_poweroff", BAD_CAST elements->on_poweroff);
+		xmlNewChild(elements_node, NULL, BAD_CAST "on_reboot", BAD_CAST elements->on_reboot);
+		xmlNewChild(elements_node, NULL, BAD_CAST "on_crash", BAD_CAST elements->on_crash);
 
 		if(elements->os != NULL) {
-			_build_domain_xml_os(elements->os, os_node);
-			xmlAddChild(root_node, os_node);
+			xmlAddChild(elements_node, _build_domain_xml_os(elements->os));
 		}
 
 		if(elements->devices != NULL) {
-			_build_domain_xml_devices(elements->devices, devices_node);
-			xmlAddChild(root_node, devices_node);
+			xmlAddChild(elements_node, _build_domain_xml_devices(elements->devices));
 		}
 	}
+
+	return elements_node;
 }
 
 /* EOF */
