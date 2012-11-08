@@ -1,6 +1,32 @@
 /*
  * Populate slurm libvirt structures with test data and produce output
  * necessary for libvirtd to launch the domain.
+ *
+ * <domain type='lxc'>
+ *   <name>vm1</name>
+ *   <memory>30000</memory>
+ *   <os>
+ *     <type>exe</type>
+ *     <init>/bin/bash</init>
+ *   </os>
+ *   <vcpu>1</vcpu>
+ *   <clock offset='utc'/>
+ *   <on_poweroff>destroy</on_poweroff>
+ *   <on_reboot>restart</on_reboot>
+ *   <on_crash>destroy</on_crash>
+ *   <devices>
+ *     <emulator>/usr/lib/libvirt/libvirt_lxc</emulator>
+ *     <interface type='network'>
+ *       <source network='default'/>
+ *     </interface>
+ *     <filesystem type='mount'>
+ *       <source dir='/'/>
+ *       <target dir='/'/>
+ *     </filesystem>
+ *     <console type='pty' />
+ *   </devices>
+ * </domain>
+ *
  */
 
 #include <stdlib.h>
