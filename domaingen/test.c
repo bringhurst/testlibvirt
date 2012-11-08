@@ -77,19 +77,18 @@ xlibvirt_domain_devices_t* build_domain_devices() {
 
 	devices->emulator = "/usr/lib/libvirt/libvirt_lxc";
 
-	devices->interfaces = (xlibvirt_domain_device_interface_t**) malloc(sizeof(xlibvirt_domain_device_interface_t*) * 2);
-	devices->filesystems = (xlibvirt_domain_device_filesystem_t**) malloc(sizeof(xlibvirt_domain_device_console_t*) * 2);
-	devices->consoles = (xlibvirt_domain_device_console_t**) malloc(sizeof(xlibvirt_domain_device_console_t*) * 2);
+	devices->interfaces = (xlibvirt_domain_device_interface_t**) malloc(sizeof(xlibvirt_domain_device_interface_t*));
+	devices->filesystems = (xlibvirt_domain_device_filesystem_t**) malloc(sizeof(xlibvirt_domain_device_console_t*));
+	devices->consoles = (xlibvirt_domain_device_console_t**) malloc(sizeof(xlibvirt_domain_device_console_t*));
 
 	devices->interfaces[0] = build_domain_device_interface();
 	devices->filesystems[0] = build_domain_device_filesystem();
 	devices->consoles[0] = build_domain_device_console();
 
-	devices->interfaces[1] = NULL;
-	devices->filesystems[1] = NULL;
-	devices->consoles[1] = NULL;
-
-	devices->pools = NULL;
+	devices->interface_count = 1;
+	devices->filesystem_count = 1;
+	devices->console_count = 1;
+	devices->pool_count = 0;
 
 	return devices;
 }

@@ -94,18 +94,84 @@ _build_domain_xml_os(xlibvirt_domain_os_t* os) {
 }
 
 xmlNodePtr
+_build_domain_xml_device_console(xlibvirt_domain_device_console_t* console) {
+	xmlNodePtr console_node = xmlNewNode(NULL, BAD_CAST "console");
+	xmlNewProp(console_node, BAD_CAST "type", BAD_CAST console->type);
+
+	return console_node;
+}
+
+xmlNodePtr
+_build_domain_xml_device_interface(xlibvirt_domain_device_interface_t* interface) {
+	xmlNodePtr interface_node = xmlNewNode(NULL, BAD_CAST "interface");
+	xmlNewProp(interface_node, BAD_CAST "type", BAD_CAST interface->type);
+
+	/* TODO */
+
+	return interface_node;
+}
+
+xmlNodePtr
+_build_domain_xml_device_filesystem(xlibvirt_domain_device_filesystem_t* filesystem) {
+	xmlNodePtr filesystem_node = xmlNewNode(NULL, BAD_CAST "filesystem");
+	xmlNewProp(filesystem_node, BAD_CAST "type", BAD_CAST filesystem->type);
+
+	/* TODO */
+
+	return filesystem_node;
+}
+
+xmlNodePtr
+_build_domain_xml_device_pool(xlibvirt_domain_device_pool_t* pool) {
+	xmlNodePtr pool_node = xmlNewNode(NULL, BAD_CAST "pool");
+	xmlNewProp(pool_node, BAD_CAST "type", BAD_CAST pool->type);
+
+	/* TODO */
+
+	return pool_node;
+}
+
+xmlNodePtr
 _build_domain_xml_devices(xlibvirt_domain_devices_t* devices) {
-	xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
-	xmlNewChild(devices_node, NULL, BAD_CAST "emulator", BAD_CAST devices->emulator);
+	int num_of_consoles = devices->console_count;
+	int num_of_interfaces = devices->interface_count;
+	int num_of_filesystems = devices->filesystem_count;
+	int num_of_pools = devices->pool_count;
 
-/*
-	xlibvirt_domain_device_interface_t* curr = *interface;
+	xmlNodePtr devices_node = NULL;
 
-	while(curr != NULL) {
-		....
-		curr++;
+	devices_node = xmlNewNode(NULL, BAD_CAST "devices");
+	xmlNewChild(devices_node, NULL, \
+		BAD_CAST "emulator", BAD_CAST devices->emulator);
+
+	while(num_of_consoles > 0) {
+		xmlAddChild(devices_node, \
+			_build_domain_xml_device_console(
+				devices->consoles[num_of_consoles - 1]));
+		num_of_consoles--;
 	}
-*/
+
+	while(num_of_interfaces > 0) {
+		xmlAddChild(devices_node, \
+			_build_domain_xml_device_interface(
+				devices->interfaces[num_of_interfaces - 1]));
+		num_of_interfaces--;
+	}
+
+	while(num_of_filesystems > 0) {
+		xmlAddChild(devices_node, \
+			_build_domain_xml_device_filesystem(
+				devices->filesystems[num_of_filesystems - 1]));
+		num_of_filesystems--;
+	}
+
+	while(num_of_pools > 0) {
+		xmlAddChild(devices_node, \
+			_build_domain_xml_device_pool(
+				devices->pools[num_of_pools - 1]));
+		num_of_pools--;
+	}
+
 	return devices_node;
 }
 
@@ -119,19 +185,33 @@ _build_domain_xml_elements(xlibvirt_domain_elements_t* elements, char* type) {
         xmlNewProp(elements_node, BAD_CAST "type", BAD_CAST type);
 
 	if(elements != NULL) {
-		xmlNewChild(elements_node, NULL, BAD_CAST "name", BAD_CAST elements->name);
-		xmlNewChild(elements_node, NULL, BAD_CAST "memory", elements->memory);
-		xmlNewChild(elements_node, NULL, BAD_CAST "vcpu", elements->vcpu);
-		xmlNewChild(elements_node, NULL, BAD_CAST "on_poweroff", BAD_CAST elements->on_poweroff);
-		xmlNewChild(elements_node, NULL, BAD_CAST "on_reboot", BAD_CAST elements->on_reboot);
-		xmlNewChild(elements_node, NULL, BAD_CAST "on_crash", BAD_CAST elements->on_crash);
+		xmlNewChild(elements_node, NULL, \
+			    BAD_CAST "name", \
+			    BAD_CAST elements->name);
+		xmlNewChild(elements_node, NULL, \
+			    BAD_CAST "memory", \
+			    BAD_CAST elements->memory);
+		xmlNewChild(elements_node, NULL, \
+			    BAD_CAST "vcpu", \
+			    BAD_CAST elements->vcpu);
+		xmlNewChild(elements_node, NULL, \
+			    BAD_CAST "on_poweroff", \
+			    BAD_CAST elements->on_poweroff);
+		xmlNewChild(elements_node, NULL, \
+			    BAD_CAST "on_reboot", \
+			    BAD_CAST elements->on_reboot);
+		xmlNewChild(elements_node, NULL, \
+			    BAD_CAST "on_crash", \
+			    BAD_CAST elements->on_crash);
 
 		if(elements->os != NULL) {
-			xmlAddChild(elements_node, _build_domain_xml_os(elements->os));
+			xmlAddChild(elements_node, \
+				_build_domain_xml_os(elements->os));
 		}
 
 		if(elements->devices != NULL) {
-			xmlAddChild(elements_node, _build_domain_xml_devices(elements->devices));
+			xmlAddChild(elements_node, \
+				_build_domain_xml_devices(elements->devices));
 		}
 	}
 

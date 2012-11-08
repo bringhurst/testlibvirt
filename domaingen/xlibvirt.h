@@ -71,6 +71,7 @@ typedef struct {
  */
 typedef struct {
 	char* type;
+	size_t source_count;
 	xlibvirt_domain_device_interface_source_t** sources;
 } xlibvirt_domain_device_interface_t;
 
@@ -147,6 +148,12 @@ typedef struct {
  */
 typedef struct {
         char* emulator;
+
+	size_t interface_count;
+	size_t filesystem_count;
+	size_t pool_count;
+	size_t console_count;
+
         xlibvirt_domain_device_interface_t** interfaces;
         xlibvirt_domain_device_filesystem_t** filesystems;
         xlibvirt_domain_device_pool_t** pools;
