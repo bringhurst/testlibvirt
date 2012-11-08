@@ -96,12 +96,13 @@ _build_domain_xml_os(xlibvirt_domain_os_t* os) {
 xmlNodePtr
 _build_domain_xml_devices(xlibvirt_domain_devices_t* devices) {
 	xmlNodePtr devices_node = xmlNewNode(NULL, BAD_CAST "devices");
+	xmlNewChild(devices_node, NULL, BAD_CAST "emulator", BAD_CAST devices->emulator);
 
 /*
-	xlibvirt_domain_devices_t* curr = *devices;
+	xlibvirt_domain_device_interface_t* curr = *interface;
 
 	while(curr != NULL) {
-		xmlNewChild(devices_node, NULL, BAD_CAST "emulator", BAD_CAST curr->emulator);
+		....
 		curr++;
 	}
 */
