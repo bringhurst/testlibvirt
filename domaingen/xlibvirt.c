@@ -55,7 +55,6 @@ xlibvirt_boot_domain(xlibvirt_domain_t* domain) {
 	return -1;
 }
 
-
 /*****************************************************************************
  * Internal functions.
  *****************************************************************************/
@@ -102,11 +101,28 @@ _build_domain_xml_device_console(xlibvirt_domain_device_console_t* console) {
 }
 
 xmlNodePtr
-_build_domain_xml_device_interface(xlibvirt_domain_device_interface_t* interface) {
-	xmlNodePtr interface_node = xmlNewNode(NULL, BAD_CAST "interface");
-	xmlNewProp(interface_node, BAD_CAST "type", BAD_CAST interface->type);
+_build_domain_xml_device_interface_source(
+		xlibvirt_domain_device_interface_source_t* source) {
+	xmlNodePtr source_node = xmlNewNode(NULL, BAD_CAST "source");
+	xmlNewProp(source_node, BAD_CAST "network", BAD_CAST source->network);
 
-	/* TODO */
+	return source_node;
+}
+
+xmlNodePtr
+_build_domain_xml_device_interface(xlibvirt_domain_device_interface_t* interface) {
+	xmlNodePtr interface_node = NULL;
+	int num_of_sources = interface->source_count;
+
+	interface_node = xmlNewNode(NULL, BAD_CAST "interface");
+        xmlNewProp(interface_node, BAD_CAST "type", BAD_CAST interface->type);
+
+        while(num_of_sources > 0) {
+                xmlAddChild(interface_node, \
+                        _build_domain_xml_device_interface_source(
+                                interface->sources[num_of_sources - 1]));
+                num_of_sources--;
+        }
 
 	return interface_node;
 }

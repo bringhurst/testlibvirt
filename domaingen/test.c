@@ -162,10 +162,10 @@ xlibvirt_domain_device_interface_t* build_domain_device_interface() {
 
 	interface->type = "network";
 
-	interface->sources = (xlibvirt_domain_device_interface_source_t**) malloc(sizeof(xlibvirt_domain_device_interface_source_t*) * 2);
+	interface->sources = (xlibvirt_domain_device_interface_source_t**) malloc(sizeof(xlibvirt_domain_device_interface_source_t*));
 
+	interface->source_count = 1;
 	interface->sources[0] = build_domain_device_interface_source();
-	interface->sources[1] = NULL;
 
 	return interface;
 }
@@ -177,6 +177,7 @@ xlibvirt_domain_device_interface_source_t* build_domain_device_interface_source(
 
 	xlibvirt_domain_device_interface_source_t* source =
 		(xlibvirt_domain_device_interface_source_t*) malloc(sizeof(xlibvirt_domain_device_interface_source_t));
+	source->network = "default";
 
 	return source;
 }
